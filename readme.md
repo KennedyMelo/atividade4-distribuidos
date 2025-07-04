@@ -1,39 +1,62 @@
-// mini_rabbitmq_benchmark
-// =====================================
-// This canvas includes a minimal FIFO queue server implemented over plain TCP, matching the
-// PUSH/PULL protocol required by the assignment, alongside producer/consumer clients and an
-// alternative producer/consumer pair that targets the commercial RabbitMQ broker (streadway/amqp).
-// A small benchmarking helper is embedded in each consumer so you can capture latency statistics
-// right from the terminal. Feel free to split these files into separate directories when compiling;
-// they live together here for readability.
+# mini_rabbitmq_benchmark
 
-/*
-Directory layout (suggested)
+## Overview
+This project provides a minimal implementation of a FIFO queue server over plain TCP, adhering to the PUSH/PULL protocol. It includes producer and consumer clients for benchmarking purposes. Additionally, it offers an alternative implementation using RabbitMQ (via the `streadway/amqp` library) to compare performance metrics.
+
+The repository is designed to help evaluate the latency and throughput of different queueing mechanisms. Each consumer includes a benchmarking helper to capture latency statistics directly from the terminal.
+
+## Directory Structure
+```
 .
 ├── simplified
-│   ├── server.go
-│   ├── producer.go
-│   └── consumer.go
+│   ├── server.go       # Minimal in-memory FIFO queue server
+│   ├── producer.go     # Producer client for the simplified server
+│   └── consumer.go     # Consumer client for the simplified server
 └── rabbitmq
-    ├── producer_rmq.go
-    └── consumer_rmq.go
+    ├── producer_rmq.go # Producer client for RabbitMQ
+    └── consumer_rmq.go # Consumer client for RabbitMQ
+```
 
-Build & run example (all in different terminals):
+## Prerequisites
+- Go 1.24.3 or later
+- RabbitMQ broker running and reachable at `amqp://guest:guest@localhost:5672/`
 
-Terminal 1 – simplified server
-$ go run simplified/server.go
+## Installation
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd atividade4-distribuidos
+   ```
+2. Install dependencies:
+   ```bash
+   go mod tidy
+   ```
 
-Terminal 2 – simplified consumer (collects latency stats)
-$ go run simplified/consumer.go -n 10000
+## Usage
 
-Terminal 3 – simplified producer (publishes timestamps)
-$ go run simplified/producer.go -n 10000
+### Simplified Server
+1. Start the server:
+   ```bash
+   go run simplified/server.go
+   ```
+2. Run the consumer to collect latency stats:
+   ```bash
+   go run simplified/consumer.go -n 10000
+   ```
+3. Run the producer to publish timestamps:
+   ```bash
+   go run simplified/producer.go -n 10000
+   ```
 
-Repeat the same pattern with the RabbitMQ versions (be sure the RabbitMQ
-broker is running and reachable at amqp://guest:guest@localhost:5672/):
+### RabbitMQ
+1. Ensure RabbitMQ is running and accessible.
+2. Run the RabbitMQ consumer:
+   ```bash
+   go run rabbitmq/consumer_rmq.go -n 10000
+   ```
+3. Run the RabbitMQ producer:
+   ```bash
+   go run rabbitmq/producer_rmq.go -n 10000
+   ```
 
-$ go run rabbitmq/consumer_rmq.go -n 10000
-$ go run rabbitmq/producer_rmq.go -n 10000
-
-Compare the average/median latency printed by each consumer to complete the
-performance evaluation.
+## Performance Evaluation
