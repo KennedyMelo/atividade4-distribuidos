@@ -59,41 +59,18 @@ The repository is designed to help evaluate the latency and throughput of differ
    go run rabbitmq/producer_rmq.go -n 10000
    ```
 
-## Benchmarking
-
-### Running Automated Tests
-
+### To buid the tests
 To perform comprehensive benchmark testing, use the provided scripts that automate multiple test iterations:
 
-#### For RabbitMQ
-
-```bash
+````bash
 #!/bin/bash
-
-# Create a directory to store results
-mkdir -p benchmark_results/rabbitmq
-timestamp=$(date +"%Y%m%d_%H%M%S")
-result_file="benchmark_results/rabbitmq/results_${timestamp}.txt"
-
-echo "Starting RabbitMQ benchmark suite (30 iterations)" | tee -a "$result_file"
-echo "Each iteration sends and receives 10,000 messages" | tee -a "$result_file"
-echo "----------------------------------------" | tee -a "$result_file"
 
 for i in {1..30}
 do
-   echo "--- Running iteration #$i ---" | tee -a "$result_file"
-   # Run the consumer in the background and capture its output
-   go run rabbitmq/consumer_rmq.go -n 10000 > temp_output.txt &
-   consumer_pid=$!
-   
+   echo "--- Running iteration #$i ---"
+   # Run the consumer in the background
+   go run rabbitmq/consumer_rmq.go -n 10000 &
    # Run the producer in the foreground
    go run rabbitmq/producer_rmq.go -n 10000
-   
-   # Wait for consumer to finish and capture results
-   wait $consumer_pid
-   cat temp_output.txt | grep "Latency" >> "$result_file"
-   echo "----------------------------------------" | tee -a "$result_file"
 done
-
-echo "Benchmark complete. Results saved to $result_file"
-rm temp_output.txt
+``` 
