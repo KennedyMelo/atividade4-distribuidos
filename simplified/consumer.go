@@ -56,5 +56,7 @@ func main() {
     }
 
     avg := sum / time.Duration(len(latencies))
-    fmt.Printf("avg=%.3fms\n", float64(avg.Nanoseconds())/1e6)
+    
+    fmt.Println(avg.Microseconds()) // imprime só micro-segundos
+    //fmt.Printf("avg=%.3fms\n", float64(avg.Nanoseconds())/1e6)
 }
