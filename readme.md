@@ -62,15 +62,14 @@ The repository is designed to help evaluate the latency and throughput of differ
 ### To buid the tests
 To perform comprehensive benchmark testing, use the provided scripts that automate multiple test iterations:
 
-````bash
-#!/bin/bash
 
-for i in {1..30}
-do
-   echo "--- Running iteration #$i ---"
-   # Run the consumer in the background
-   go run rabbitmq/consumer_rmq.go -n 10000 &
-   # Run the producer in the foreground
-   go run rabbitmq/producer_rmq.go -n 10000
-done
+### To run bashes
+````bash
+# RabbitMq
+chmod +x rabbitmq.sh
+./rabbitmq.sh
+
+# Simplified
+chmod +x rabbitmq.sh
+./rabbitmq.sh
 ``` 
