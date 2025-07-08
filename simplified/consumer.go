@@ -5,7 +5,6 @@ import (
     "flag"
     "fmt"
     "log"
-    "math"
     "net"
     "strconv"
     "strings"
@@ -41,8 +40,8 @@ func main() {
         case strings.HasPrefix(line, "MSG "):
             tsStr := strings.TrimPrefix(line, "MSG ")
             sent, _ := strconv.ParseInt(tsStr, 10, 64)
-            lat := time.Since(time.Unix(0, sent))
-            latencies = append(latencies, lat)
+            lat := time.Now().UnixNano() - sent
+            latencies = append(latencies, time.Duration(lat))
         case line == "EMPTY":
             time.Sleep(100 * time.Microsecond) // brief back‑off
         default:
@@ -52,17 +51,10 @@ func main() {
 
     // simple stats
     var sum time.Duration
-    min := time.Duration(math.MaxInt64)
-    max := time.Duration(0)
     for _, l := range latencies {
-        if l < min {
-            min = l
-        }
-        if l > max {
-            max = l
-        }
         sum += l
     }
+
     avg := sum / time.Duration(len(latencies))
-    fmt.Printf("received %d messages\nmin=%v  max=%v  avg=%v\n", len(latencies), min, max, avg)
+    fmt.Printf("avg=%.3fms\n", float64(avg.Nanoseconds())/1e6)
 }

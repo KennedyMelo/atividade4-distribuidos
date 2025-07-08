@@ -4,10 +4,8 @@ import (
     "flag"
     "fmt"
     "log"
-    "math"
     "strconv"
     "time"
-
     "github.com/streadway/amqp"
 )
 
@@ -40,25 +38,19 @@ func main() {
     var latencies []time.Duration
     for msg := range msgs {
         sent, _ := strconv.ParseInt(string(msg.Body), 10, 64)
-        lat := time.Since(time.Unix(0, sent))
-        latencies = append(latencies, lat)
+        lat := time.Now().UnixNano() - sent
+        latencies = append(latencies, time.Duration(lat))
         if len(latencies) >= *n {
             break
         }
     }
 
     var sum time.Duration
-    min := time.Duration(math.MaxInt64)
-    max := time.Duration(0)
     for _, l := range latencies {
-        if l < min {
-            min = l
-        }
-        if l > max {
-            max = l
-        }
         sum += l
     }
+
     avg := sum / time.Duration(len(latencies))
-    fmt.Printf("received %d msgs\nmin=%v max=%v avg=%v\n", len(latencies), min, max, avg)
+
+    fmt.Printf("avg=%.3fms\n", float64(avg.Nanoseconds())/1e6)
 }
